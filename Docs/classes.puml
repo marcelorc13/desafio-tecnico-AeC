@@ -1,0 +1,29 @@
+@startuml classes
+
+class UserModel {
+    + Id : int
+    + Name : string
+    + Username : string
+    + Password : string
+}
+
+class AddressModel {
+    + Id : int
+    + Name : string
+    + CEP : string
+    + PublicPlace : string
+    + Complement : string?
+    + District : string
+    + City : string
+    + FederalUnit : string
+    + Number : string
+    + UserId : int <<FK>>
+}
+
+UserModel "1" --o "0..*" AddressModel : has
+
+note right of AddressModel::UserId
+  Foreign Key → UserModel.Id
+end note
+
+@enduml
