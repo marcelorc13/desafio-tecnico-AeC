@@ -5,6 +5,7 @@ using System.Security.Claims;
 using App.Data;
 using App.Models;
 using App.Models.DTOs;
+using App.Integrations.Interfaces;
 
 namespace App.Controllers;
 
@@ -13,10 +14,12 @@ namespace App.Controllers;
 public class AddressController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IViaCepIntegration _viaCep;
 
-    public AddressController(AppDbContext db)
+    public AddressController(AppDbContext db, IViaCepIntegration viaCep)
     {
         _db = db;
+        _viaCep = viaCep;
     }
 
     private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -70,6 +73,17 @@ public class AddressController : Controller
         };
 
         return View(dto);
+    }
+
+    [HttpGet("cep/{cep}")]
+    public async Task<IActionResult> GetByCep(string cep)
+    {
+        var result = await _viaCep.GetAddressByCep(cep);
+
+        if (result == null)
+            return NotFound(new { message = "CEP não encontrado ou inválido" });
+
+        return Ok(result);
     }
 
     [HttpGet("create")]
