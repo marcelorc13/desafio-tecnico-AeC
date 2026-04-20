@@ -1,0 +1,62 @@
+@model App.Models.DTOs.UserCreateDto
+@{
+    ViewData["Title"] = "Cadastro";
+    Layout = "_AuthLayout";
+}
+
+<div class="text-center mb-6">
+    <h1 class="text-xl font-bold text-navy">Criar conta</h1>
+    <p class="text-sm text-muted mt-1">Comece a gerenciar seus endereços</p>
+</div>
+
+<div class="bg-white border border-border rounded-xl shadow-panel p-6">
+            <form asp-action="Register" asp-controller="Auth" asp-route-area="" method="post">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 border border-red-200 text-danger text-sm rounded-md px-3 py-2 mb-4 validation-summary-errors"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="block text-xs font-semibold text-slate mb-1.5">Nome completo</label>
+                    <input asp-for="Name"
+                           class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150"
+                           placeholder="Seu nome" autocomplete="name" />
+                    <span asp-validation-for="Name" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Username" class="block text-xs font-semibold text-slate mb-1.5">Usuário</label>
+                    <input asp-for="Username"
+                           class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150"
+                           placeholder="nome_de_usuario" autocomplete="username" />
+                    <span asp-validation-for="Username" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="block text-xs font-semibold text-slate mb-1.5">Senha</label>
+                    <input asp-for="Password" type="password"
+                           class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150"
+                           placeholder="••••••••" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="ConfirmPassword" class="block text-xs font-semibold text-slate mb-1.5">Confirmar senha</label>
+                    <input asp-for="ConfirmPassword" type="password"
+                           class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150"
+                           placeholder="••••••••" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                </div>
+
+                <button type="submit"
+                        class="w-full flex justify-center items-center text-sm font-semibold text-white bg-brand hover:bg-brand-dark py-2.5 rounded-md transition-colors duration-150 cursor-pointer border-0">
+                    Criar conta
+                </button>
+            </form>
+        </div>
+
+<p class="text-center text-sm text-muted mt-5">
+    Já tem conta?
+    <a asp-action="Login" asp-controller="Auth" class="text-brand hover:text-brand-dark font-semibold no-underline hover:underline cursor-pointer">Entrar</a>
+</p>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

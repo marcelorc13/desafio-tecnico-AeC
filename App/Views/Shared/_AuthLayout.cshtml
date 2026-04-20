@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — LocaMap</title>
+    <script type="importmap"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand:    '#0369A1',
+                        'brand-dark': '#025484',
+                        'brand-light': '#E0F2FE',
+                        navy:     '#0F172A',
+                        slate:    '#334155',
+                        muted:    '#64748B',
+                        subtle:   '#94A3B8',
+                        border:   '#E2E8F0',
+                        'border-dark': '#CBD5E1',
+                        surface:  '#F8FAFC',
+                        white:    '#FFFFFF',
+                        success:  '#16A34A',
+                        danger:   '#DC2626',
+                        warning:  '#D97706',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    fontSize: {
+                        '2xs': ['0.65rem', { lineHeight: '1rem' }],
+                    },
+                    boxShadow: {
+                        card:  '0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04)',
+                        panel: '0 4px 16px rgba(15,23,42,.08)',
+                        focus: '0 0 0 3px rgba(3,105,161,.18)',
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-surface text-navy font-sans antialiased min-h-screen flex flex-col items-center justify-center px-4 py-8">
+
+    <div class="w-full max-w-sm">
+        <div class="flex justify-center mb-8">
+            @if (System.IO.File.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png")))
+            {
+                <img src="~/images/logo.png" alt="Logo" class="h-10 w-auto object-contain" />
+            }
+            else if (System.IO.File.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.svg")))
+            {
+                <img src="~/images/logo.svg" alt="Logo" class="h-10 w-auto object-contain" />
+            }
+            else
+            {
+                <div class="flex items-center gap-2.5">
+                    <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
+                        <rect width="28" height="28" rx="6" fill="#0369A1"/>
+                        <path d="M14 5C10.134 5 7 8.134 7 12c0 5.25 7 14 7 14s7-8.75 7-14c0-3.866-3.134-7-7-7zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" fill="white"/>
+                    </svg>
+                    <span class="text-lg font-bold text-navy tracking-tight">LocaMap</span>
+                </div>
+            }
+        </div>
+
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
