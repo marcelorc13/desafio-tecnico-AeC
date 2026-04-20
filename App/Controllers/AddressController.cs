@@ -168,32 +168,8 @@ public class AddressController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet("delete/{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var userId = GetUserId();
-        var address = await _db.Addresses
-            .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
-
-        if (address == null) return NotFound();
-
-        return View(new AddressResponseDto
-        {
-            Id = address.Id,
-            Name = address.Name,
-            CEP = address.CEP,
-            PublicPlace = address.PublicPlace,
-            Complement = address.Complement,
-            District = address.District,
-            City = address.City,
-            FederalUnit = address.FederalUnit,
-            Number = address.Number,
-            UserId = address.UserId
-        });
-    }
-
     [HttpPost("delete/{id}")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         var userId = GetUserId();
         var address = await _db.Addresses
