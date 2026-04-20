@@ -14,6 +14,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/auth/logout";
     });
 
+builder.Services.AddHttpClient("viacep", client =>
+{
+    client.BaseAddress = new Uri("https://viacep.com.br/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
+builder.Services.AddScoped<App.Integrations.Interfaces.IViaCepIntegration, App.Integrations.ViaCepIntegration>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
