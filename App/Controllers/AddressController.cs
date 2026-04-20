@@ -5,6 +5,7 @@ using System.Security.Claims;
 using App.Data;
 using App.Models;
 using App.Models.DTOs;
+using App.Helpers;
 using App.Integrations.Interfaces;
 
 namespace App.Controllers;
@@ -204,5 +205,59 @@ public class AddressController : Controller
         await _db.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export()
+    {
+        var userId = GetUserId();
+
+        var addresses = await _db.Addresses
+            .Where(a => a.UserId == userId)
+            .Select(a => new AddressCsvDTO
+            {
+                Id = a.Id,
+                Nome = a.Name,
+                CEP = a.CEP,
+                Logradouro = a.PublicPlace,
+                Complemento = a.Complement,
+                Bairro = a.District,
+                Cidade = a.City,
+                UF = a.FederalUnit,
+                Numero = a.Number,
+            })
+            .ToListAsync();
+
+        var csv = CsvHelper.Generate(addresses);
+
+        return File(csv, "text/csv", "enderecos.csv");
+    }
+
+    [HttpGet("export/{id}")]
+    public async Task<IActionResult> ExportById(int id)
+    {
+        var userId = GetUserId();
+
+        var addresses = await _db.Addresses
+            .Where(a => a.Id == id && a.UserId == userId)
+            .Select(a => new AddressCsvDTO
+            {
+                Id = a.Id,
+                Nome = a.Name,
+                CEP = a.CEP,
+                Logradouro = a.PublicPlace,
+                Complemento = a.Complement,
+                Bairro = a.District,
+                Cidade = a.City,
+                UF = a.FederalUnit,
+                Numero = a.Number,
+            })
+            .ToListAsync();
+
+        string filename = $"endereco{id}.csv";
+
+        var csv = CsvHelper.Generate(addresses);
+
+        return File(csv, "text/csv", filename);
     }
 }
