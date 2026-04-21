@@ -1,0 +1,158 @@
+@model IEnumerable<App.Models.DTOs.AddressResponseDto>
+@{
+    ViewData["Title"] = "Meus Endereços";
+}
+
+<div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+    <div>
+        <p class="text-xs font-semibold tracking-widest uppercase text-muted mb-0.5">Gerenciamento</p>
+        <h1 class="text-xl font-bold text-navy m-0 leading-tight">Meus Endereços</h1>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex bg-white border border-border rounded-md overflow-hidden shadow-card" id="viewToggle">
+            <button id="btn-grid" class="vt-btn active flex items-center justify-center w-9 h-9 text-muted hover:text-slate transition-colors duration-150 cursor-pointer"
+                    onclick="setView('grid')" aria-label="Visualização em grade">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
+                    <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
+                    <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
+                    <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
+                </svg>
+            </button>
+            <button id="btn-list" class="vt-btn flex items-center justify-center w-9 h-9 text-muted hover:text-slate transition-colors duration-150 cursor-pointer border-l border-border"
+                    onclick="setView('list')" aria-label="Visualização em lista">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="2.5" width="14" height="2" rx="1" fill="currentColor"/>
+                    <rect x="1" y="7" width="14" height="2" rx="1" fill="currentColor"/>
+                    <rect x="1" y="11.5" width="14" height="2" rx="1" fill="currentColor"/>
+                </svg>
+            </button>
+        </div>
+
+        <a asp-action="Export"
+           class="inline-flex items-center gap-1.5 text-sm font-medium text-success bg-white border border-border hover:border-green-300 hover:bg-green-50 px-3.5 py-2 rounded-md transition-colors duration-150 no-underline shadow-card cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Exportar CSV
+        </a>
+
+        <a asp-action="Create"
+           class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand hover:bg-brand-dark px-3.5 py-2 rounded-md transition-colors duration-150 no-underline shadow-sm cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Novo Endereço
+        </a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="bg-white border border-border rounded-lg shadow-card py-16 px-4 text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-light mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-brand">
+                <path d="M12 2C8.134 2 5 5.134 5 9c0 6.5 7 15 7 15s7-8.5 7-15c0-3.866-3.134-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="currentColor"/>
+            </svg>
+        </div>
+        <h3 class="text-sm font-semibold text-navy mb-1">Nenhum endereço cadastrado</h3>
+        <p class="text-sm text-muted mb-5">Adicione seu primeiro endereço para começar.</p>
+        <a asp-action="Create"
+           class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand hover:bg-brand-dark px-4 py-2 rounded-md transition-colors duration-150 no-underline cursor-pointer">
+            Adicionar endereço
+        </a>
+    </div>
+}
+else
+{
+    <div id="addresses-container" class="mode-grid">
+        @foreach (var address in Model)
+        {
+            <div class="addr-card bg-white border border-border rounded-lg shadow-card hover:shadow-panel hover:border-border-dark transition-all duration-150 overflow-hidden cursor-pointer">
+                <div class="addr-card-accent"></div>
+                <div class="addr-card-body">
+                    <h5 class="addr-card-title font-semibold text-[0.9rem] text-navy mb-1.5 leading-snug">@address.Name</h5>
+                    <p class="text-sm text-slate mb-0.5 leading-relaxed">@address.PublicPlace, @address.Number</p>
+                    @if (!string.IsNullOrEmpty(address.Complement))
+                    {
+                        <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.Complement</p>
+                    }
+                    <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.District — @address.City / @address.FederalUnit</p>
+                    <span class="addr-card-cep inline-block text-2xs font-semibold tracking-widest uppercase text-subtle mt-2">CEP @address.CEP</span>
+                </div>
+                <div class="addr-card-footer">
+                    <a asp-action="GetById" asp-route-id="@address.Id"
+                       class="inline-flex items-center text-xs font-medium text-muted bg-surface border border-border hover:border-border-dark hover:text-slate px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Ver</a>
+                    <a asp-action="Edit" asp-route-id="@address.Id"
+                       class="inline-flex items-center text-xs font-medium text-brand bg-brand-light border border-blue-200 hover:bg-blue-100 px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Editar</a>
+                    <a asp-action="ExportById" asp-route-id="@address.Id"
+                       class="inline-flex items-center gap-1 text-xs font-medium text-success bg-green-50 border border-green-200 hover:bg-green-100 px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">
+                        CSV
+                    </a>
+                    <button type="button"
+                            onclick="confirmDelete(@address.Id, '@Html.Raw(address.Name.Replace("'", "\\'"))')"
+                            class="inline-flex items-center text-xs font-medium text-danger bg-red-50 border border-red-200 hover:bg-red-100 px-2.5 py-1 rounded transition-colors duration-150 cursor-pointer">Excluir</button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="absolute inset-0 bg-navy/40 backdrop-blur-[2px]" onclick="closeDeleteModal()"></div>
+    <div class="relative bg-white rounded-xl shadow-panel border border-border w-full max-w-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-red-200 bg-red-50 flex items-center gap-2.5">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" class="text-danger flex-shrink-0">
+                <path d="M12 9v4m0 2.5V16M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p id="modal-title" class="text-sm font-semibold text-danger m-0">Excluir endereço</p>
+        </div>
+        <div class="px-5 py-4">
+            <p class="text-sm text-slate m-0">Tem certeza que deseja excluir <span id="modal-name" class="font-semibold text-navy"></span>? Esta ação não poderá ser desfeita.</p>
+        </div>
+        <div class="px-5 py-3 border-t border-border bg-surface flex gap-2 justify-end">
+            <button type="button" onclick="closeDeleteModal()"
+                    class="inline-flex items-center text-sm font-medium text-muted bg-white border border-border hover:border-border-dark hover:text-slate px-4 py-1.5 rounded-md transition-colors duration-150 cursor-pointer">Cancelar</button>
+            <form id="delete-form" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit"
+                        class="inline-flex items-center text-sm font-semibold text-white bg-danger hover:bg-red-700 px-4 py-1.5 rounded-md transition-colors duration-150 border-0 cursor-pointer">Confirmar exclusão</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const STORAGE_KEY = 'addr-view';
+
+    function setView(v) {
+        const c = document.getElementById('addresses-container');
+        if (!c) return;
+        c.className = 'mode-' + v;
+        document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+        document.getElementById('btn-list').classList.toggle('active', v === 'list');
+        localStorage.setItem(STORAGE_KEY, v);
+    }
+
+    (function () { setView(localStorage.getItem(STORAGE_KEY) || 'grid'); })();
+
+    function confirmDelete(id, name) {
+        document.getElementById('modal-name').textContent = name;
+        document.getElementById('delete-form').action = `/addresses/delete/${id}`;
+        const modal = document.getElementById('delete-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDeleteModal();
+    });
+</script>
+}
