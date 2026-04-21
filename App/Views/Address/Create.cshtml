@@ -31,7 +31,7 @@
                 <div>
                     <label asp-for="CEP" class="block text-xs font-semibold text-slate mb-1.5">CEP</label>
                     <div class="relative">
-                        <input asp-for="CEP" id="cep-input" class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150" maxlength="8" placeholder="00000000" />
+                        <input asp-for="CEP" id="cep-input" class="w-full bg-surface border border-border text-navy rounded-md px-3 py-2.5 text-sm placeholder-subtle focus:border-brand transition-colors duration-150" maxlength="9" placeholder="00000-000" />
                         <div id="cep-loading" class="hidden absolute right-3 top-1/2 -translate-y-1/2">
                             <svg class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <circle cx="12" cy="12" r="10" stroke="#CBD5E1" stroke-width="3"/>
@@ -119,7 +119,14 @@
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
-        document.getElementById('cep-input').addEventListener('blur', async function () {
+        const cepInput = document.getElementById('cep-input');
+
+        cepInput.addEventListener('input', function () {
+            const digits = this.value.replace(/\D/g, '').slice(0, 8);
+            this.value = digits.length > 5 ? digits.slice(0, 5) + '-' + digits.slice(5) : digits;
+        });
+
+        cepInput.addEventListener('blur', async function () {
             const cep = this.value.replace(/\D/g, '');
             if (cep.length !== 8) return;
             const loader = document.getElementById('cep-loading');
@@ -135,6 +142,10 @@
                 document.getElementById('Complement').value = data.complemento ?? '';
             } catch {}
             finally { loader.classList.add('hidden'); }
+        });
+
+        cepInput.closest('form').addEventListener('submit', function () {
+            cepInput.value = cepInput.value.replace(/\D/g, '');
         });
     </script>
 }

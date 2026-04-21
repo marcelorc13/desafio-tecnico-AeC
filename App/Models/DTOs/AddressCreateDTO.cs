@@ -8,7 +8,7 @@ public class AddressCreateDto
     public string Name { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "CEP é obrigatório")]
-    [RegularExpression(@"^\d{8}$", ErrorMessage = "CEP deve conter exatamente 8 dígitos")]
+    [RegularExpression(@"^\d{5}-?\d{3}$", ErrorMessage = "CEP deve conter exatamente 8 dígitos")]
     public string CEP { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Logradouro é obrigatório")]

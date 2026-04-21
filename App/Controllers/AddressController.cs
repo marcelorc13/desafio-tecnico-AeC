@@ -103,7 +103,7 @@ public class AddressController : Controller
         var address = new AddressModel
         {
             Name = dto.Name,
-            CEP = dto.CEP,
+            CEP = dto.CEP.Replace("-", ""),
             PublicPlace = dto.PublicPlace,
             Complement = dto.Complement,
             District = dto.District,
@@ -165,7 +165,7 @@ public class AddressController : Controller
         if (address == null) return NotFound();
 
         address.Name = dto.Name;
-        address.CEP = dto.CEP;
+        address.CEP = dto.CEP.Replace("-", "");
         address.PublicPlace = dto.PublicPlace;
         address.Complement = dto.Complement;
         address.District = dto.District;
