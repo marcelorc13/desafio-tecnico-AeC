@@ -47,6 +47,25 @@
     </div>
 </div>
 
+<div id="selection-bar" class="hidden items-center justify-between gap-3 bg-brand-light border border-blue-200 rounded-lg px-4 py-2.5 mb-4">
+    <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-brand" id="selection-count">0 selecionados</span>
+        <button type="button" onclick="clearSelection()"
+                class="text-xs font-medium text-muted hover:text-danger underline-offset-2 hover:underline cursor-pointer bg-transparent border-0 p-0">
+            Limpar seleção
+        </button>
+    </div>
+    <div class="flex items-center gap-2">
+        <button type="button" onclick="exportSelection()"
+                class="inline-flex items-center gap-1.5 text-xs font-medium text-success bg-white border border-green-200 hover:bg-green-50 px-3 py-1.5 rounded-md transition-colors duration-150 cursor-pointer">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Exportar selecionados
+        </button>
+    </div>
+</div>
+
 @if (!Model.Any())
 {
     <div class="bg-white border border-border rounded-lg shadow-card py-16 px-4 text-center">
@@ -68,10 +87,16 @@ else
     <div id="addresses-container" class="mode-grid">
         @foreach (var address in Model)
         {
-            <div class="addr-card bg-white border border-border rounded-lg shadow-card hover:shadow-panel hover:border-border-dark transition-all duration-150 overflow-hidden cursor-pointer">
+            <div class="addr-card bg-white border border-border rounded-lg shadow-card hover:shadow-panel hover:border-border-dark transition-all duration-150 overflow-hidden" data-id="@address.Id">
                 <div class="addr-card-accent"></div>
                 <div class="addr-card-body">
-                    <h5 class="addr-card-title font-semibold text-[0.9rem] text-navy mb-1.5 leading-snug">@address.Name</h5>
+                    <div class="flex items-start justify-between gap-2 mb-1.5">
+                        <h5 class="addr-card-title font-semibold text-[0.9rem] text-navy leading-snug m-0">@address.Name</h5>
+                        <label class="addr-select-label flex-shrink-0 flex items-center cursor-pointer mt-0.5" title="Selecionar">
+                            <input type="checkbox" class="addr-checkbox w-4 h-4 rounded border-border accent-brand cursor-pointer"
+                                   data-id="@address.Id" onchange="onCheckboxChange(this)" />
+                        </label>
+                    </div>
                     <p class="text-sm text-slate mb-0.5 leading-relaxed">@address.PublicPlace, @address.Number</p>
                     @if (!string.IsNullOrEmpty(address.Complement))
                     {
@@ -126,6 +151,7 @@ else
 <script>
     const STORAGE_KEY = 'addr-view';
 
+    // --- view toggle ---
     function setView(v) {
         const c = document.getElementById('addresses-container');
         if (!c) return;
@@ -137,6 +163,7 @@ else
 
     (function () { setView(localStorage.getItem(STORAGE_KEY) || 'grid'); })();
 
+    // --- delete modal ---
     function confirmDelete(id, name) {
         document.getElementById('modal-name').textContent = name;
         document.getElementById('delete-form').action = `/addresses/delete/${id}`;
@@ -154,5 +181,56 @@ else
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeDeleteModal();
     });
+
+    // --- selection ---
+    let selectedIds = [];
+
+    function onCheckboxChange(checkbox) {
+        const id = parseInt(checkbox.dataset.id, 10);
+        const card = checkbox.closest('.addr-card');
+
+        if (checkbox.checked) {
+            if (!selectedIds.includes(id)) selectedIds.push(id);
+            card.classList.add('ring-2', 'ring-brand', 'ring-inset');
+        } else {
+            selectedIds = selectedIds.filter(x => x !== id);
+            card.classList.remove('ring-2', 'ring-brand', 'ring-inset');
+        }
+
+        updateSelectionBar();
+    }
+
+    function updateSelectionBar() {
+        const bar = document.getElementById('selection-bar');
+        const count = document.getElementById('selection-count');
+        const n = selectedIds.length;
+
+        if (n > 0) {
+            bar.classList.remove('hidden');
+            bar.classList.add('flex');
+            count.textContent = n === 1 ? '1 selecionado' : `${n} selecionados`;
+        } else {
+            bar.classList.add('hidden');
+            bar.classList.remove('flex');
+        }
+    }
+
+    function clearSelection() {
+        selectedIds = [];
+        document.querySelectorAll('.addr-checkbox').forEach(cb => {
+            cb.checked = false;
+            cb.closest('.addr-card').classList.remove('ring-2', 'ring-brand', 'ring-inset');
+        });
+        updateSelectionBar();
+    }
+
+    function exportSelection() {
+        if (selectedIds.length === 0) return;
+        window.location.href = `/addresses/export/selection?ids=${selectedIds.join(',')}`;
+    }
+
+    function getSelectedIds() {
+        return [...selectedIds];
+    }
 </script>
 }

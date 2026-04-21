@@ -227,6 +227,45 @@ public class AddressController : Controller
         return File(csv, "text/csv", "enderecos.csv");
     }
 
+    [HttpGet("export/selection")]
+    public async Task<IActionResult> ExportSelection([FromQuery] string ids)
+    {
+        if (string.IsNullOrWhiteSpace(ids))
+            return BadRequest(new { message = "Nenhum ID informado" });
+
+        var parsedIds = ids.Split(',')
+            .Select(s => int.TryParse(s.Trim(), out var n) ? (int?)n : null)
+            .Where(n => n.HasValue)
+            .Select(n => n!.Value)
+            .Distinct()
+            .ToList();
+
+        if (parsedIds.Count == 0)
+            return BadRequest(new { message = "IDs inválidos" });
+
+        var userId = GetUserId();
+
+        var addresses = await _db.Addresses
+            .Where(a => parsedIds.Contains(a.Id) && a.UserId == userId)
+            .Select(a => new AddressCsvDTO
+            {
+                Id = a.Id,
+                Nome = a.Name,
+                CEP = a.CEP,
+                Logradouro = a.PublicPlace,
+                Complemento = a.Complement,
+                Bairro = a.District,
+                Cidade = a.City,
+                UF = a.FederalUnit,
+                Numero = a.Number,
+            })
+            .ToListAsync();
+
+        var csv = CsvHelper.Generate(addresses);
+
+        return File(csv, "text/csv", "enderecos-selecionados.csv");
+    }
+
     [HttpGet("export/{id}")]
     public async Task<IActionResult> ExportById(int id)
     {
