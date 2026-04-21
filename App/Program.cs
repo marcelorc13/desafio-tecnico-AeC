@@ -39,6 +39,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseMiddleware<App.Middlewares.RedirectAuthenticatedMiddleware>();
 app.UseAuthorization();
 
 app.MapStaticAssets();
