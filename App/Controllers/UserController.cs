@@ -67,7 +67,7 @@ public class AuthController : Controller
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
         {
-            ModelState.AddModelError(string.Empty, "Invalid username or password");
+            ModelState.AddModelError(string.Empty, "Usuário ou Senha inválido");
             return View(dto);
         }
 
