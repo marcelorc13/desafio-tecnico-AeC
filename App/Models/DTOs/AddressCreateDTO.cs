@@ -32,6 +32,6 @@ public class AddressCreateDto
     public string FederalUnit { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Número é obrigatório")]
-    [RegularExpression(@"^\d+[A-Za-z]?$", ErrorMessage = "Número deve ser numérico (ex: 123 ou 123A)")]
+    [RegularExpression(@"^(\d+[A-Za-z]?|[Ss]/[Nn])$", ErrorMessage = "Número deve ser numérico (ex: 123 ou 123A) ou S/N")]
     public string Number { get; set; } = string.Empty;
 }
