@@ -201,6 +201,34 @@ public class AddressController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost("delete/selection")]
+    public async Task<IActionResult> DeleteSelection([FromForm] string ids)
+    {
+        if (string.IsNullOrWhiteSpace(ids))
+            return RedirectToAction(nameof(Index));
+
+        var parsedIds = ids.Split(',')
+            .Select(s => int.TryParse(s.Trim(), out var n) ? (int?)n : null)
+            .Where(n => n.HasValue)
+            .Select(n => n!.Value)
+            .Distinct()
+            .ToList();
+
+        if (parsedIds.Count == 0)
+            return RedirectToAction(nameof(Index));
+
+        var userId = GetUserId();
+
+        var addresses = await _db.Addresses
+            .Where(a => parsedIds.Contains(a.Id) && a.UserId == userId)
+            .ToListAsync();
+
+        _db.Addresses.RemoveRange(addresses);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpGet("export")]
     public async Task<IActionResult> Export()
     {

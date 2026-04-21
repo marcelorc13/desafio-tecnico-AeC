@@ -63,8 +63,20 @@
             </svg>
             Exportar selecionados
         </button>
+        <button type="button" onclick="confirmDeleteSelection()"
+                class="inline-flex items-center gap-1.5 text-xs font-medium text-danger bg-white border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-md transition-colors duration-150 cursor-pointer">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5M3 4l1 9a1 1 0 001 1h6a1 1 0 001-1l1-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Excluir selecionados
+        </button>
     </div>
 </div>
+
+<form id="delete-selection-form" method="post" action="/addresses/delete/selection" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ids" id="delete-selection-ids" />
+</form>
 
 @if (!Model.Any())
 {
@@ -166,6 +178,27 @@ else
     </div>
 </div>
 
+<div id="delete-selection-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-selection-title">
+    <div class="absolute inset-0 bg-navy/40 backdrop-blur-[2px]" onclick="closeDeleteSelectionModal()"></div>
+    <div class="relative bg-white rounded-xl shadow-panel border border-border w-full max-w-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-red-200 bg-red-50 flex items-center gap-2.5">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" class="text-danger flex-shrink-0">
+                <path d="M12 9v4m0 2.5V16M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p id="modal-selection-title" class="text-sm font-semibold text-danger m-0">Excluir endereços selecionados</p>
+        </div>
+        <div class="px-5 py-4">
+            <p class="text-sm text-slate m-0">Tem certeza que deseja excluir <span id="modal-selection-count" class="font-semibold text-navy"></span>? Esta ação não poderá ser desfeita.</p>
+        </div>
+        <div class="px-5 py-3 border-t border-border bg-surface flex gap-2 justify-end">
+            <button type="button" onclick="closeDeleteSelectionModal()"
+                    class="inline-flex items-center text-sm font-medium text-muted bg-white border border-border hover:border-border-dark hover:text-slate px-4 py-1.5 rounded-md transition-colors duration-150 cursor-pointer">Cancelar</button>
+            <button type="button" onclick="submitDeleteSelection()"
+                    class="inline-flex items-center text-sm font-semibold text-white bg-danger hover:bg-red-700 px-4 py-1.5 rounded-md transition-colors duration-150 border-0 cursor-pointer">Confirmar exclusão</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 <script>
     const STORAGE_KEY = 'addr-view';
@@ -221,8 +254,29 @@ else
     }
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeDeleteModal();
+        if (e.key === 'Escape') { closeDeleteModal(); closeDeleteSelectionModal(); }
     });
+
+    function confirmDeleteSelection() {
+        if (selectedIds.length === 0) return;
+        const n = selectedIds.length;
+        document.getElementById('modal-selection-count').textContent =
+            n === 1 ? '1 endereço' : `${n} endereços`;
+        const modal = document.getElementById('delete-selection-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteSelectionModal() {
+        const modal = document.getElementById('delete-selection-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function submitDeleteSelection() {
+        document.getElementById('delete-selection-ids').value = selectedIds.join(',');
+        document.getElementById('delete-selection-form').submit();
+    }
 
     // --- selection ---
     let selectedIds = [];
