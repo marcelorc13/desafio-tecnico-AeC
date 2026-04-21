@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 using App.Data;
 using App.Models;
@@ -113,7 +114,16 @@ public class AddressController : Controller
         };
 
         _db.Addresses.Add(address);
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
+        {
+            ModelState.AddModelError(nameof(dto.Name), "Você ja possui um endereço com este apelido");
+            return View(dto);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -163,7 +173,15 @@ public class AddressController : Controller
         address.FederalUnit = dto.FederalUnit;
         address.Number = dto.Number;
 
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
+        {
+            ModelState.AddModelError(nameof(dto.Name), "Você ja possui um endereço com este apelido");
+            return View("Edit", dto);
+        }
 
         return RedirectToAction(nameof(Index));
     }

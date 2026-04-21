@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Name).IsRequired().HasMaxLength(100);
+            entity.HasIndex(a => new { a.Name, a.UserId }).IsUnique();
             entity.Property(a => a.CEP).IsRequired().HasMaxLength(8);
             entity.Property(a => a.PublicPlace).IsRequired().HasMaxLength(200);
             entity.Property(a => a.Complement).HasMaxLength(100);
