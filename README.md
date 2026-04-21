@@ -10,21 +10,26 @@ Aplicação web em C# desenvolvida como teste prático para o time de Sistemas d
 - Cadastro de conta (nome, usuário, senha)
 - Login com validação de credenciais (BCrypt)
 - Redirecionamento para a listagem de endereços após login bem-sucedido
+- Redirecionamento inverso: usuários já autenticados que acessam `/auth/login` ou `/auth/register` são enviados para `/addresses` automaticamente (com verificação de expiração real do cookie)
 
 #### CRUD de Endereços
-- **Listar** — visualização em grade ou lista (preferência salva no navegador)
+- **Listar** — visualização em grade ou lista (preferência salva no navegador via `localStorage`)
 - **Detalhar** — página com todas as informações do endereço
-- **Criar** — formulário com preenchimento automático ao digitar o CEP (integração ViaCEP)
+- **Criar** — formulário com preenchimento automático ao digitar o CEP (integração ViaCEP) e apelido único por usuário
 - **Editar** — mesma integração ViaCEP disponível na edição
 - **Excluir** — botão com modal de confirmação inline (sem página extra)
+- **Seleção em lote** — selecione múltiplos endereços via checkbox; barra de ações aparece com opções de exportar ou excluir em lote
+- **Copiar endereço** — copia o endereço formatado para a área de transferência com feedback visual
 
 #### Exportação CSV
 - Exportar **todos** os endereços do usuário logado em um único arquivo CSV
+- Exportar **endereços selecionados** (`GET /addresses/export/selection?ids=1,2,3`)
 - Exportar um **endereço individual** diretamente da lista ou da página de detalhes
 
 #### Integração ViaCEP
 - Endpoint interno `GET /addresses/cep/{cep}` que consulta a API pública do ViaCEP
 - Ao informar o CEP nos formulários de criação/edição, os campos de logradouro, bairro, cidade, UF e complemento são preenchidos automaticamente
+- Link "Não sei meu CEP" nos formulários aponta para a ferramenta de busca dos Correios
 
 ---
 
@@ -56,7 +61,7 @@ Aplicação web em C# desenvolvida como teste prático para o time de Sistemas d
 | Coluna | Tipo | Observação |
 |--------|------|-----------|
 | Id | INT IDENTITY | PK |
-| Name | NVARCHAR(100) | Nome/rótulo do endereço |
+| Name | NVARCHAR(100) | Nome/rótulo do endereço (único por usuário) |
 | CEP | NVARCHAR(8) | Sem máscara |
 | PublicPlace | NVARCHAR(200) | Logradouro |
 | Complement | NVARCHAR(100) | Opcional (nullable) |
@@ -93,6 +98,7 @@ CREATE TABLE Addresses (
 );
 
 CREATE INDEX IX_Addresses_UserId ON Addresses (UserId);
+CREATE UNIQUE INDEX IX_Addresses_Name_UserId ON Addresses (Name, UserId);
 ```
 
 
@@ -100,7 +106,7 @@ CREATE INDEX IX_Addresses_UserId ON Addresses (UserId);
 
 ### Requisitos
 
-- [.NET 8+ SDK](https://dotnet.microsoft.com/download)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/)
 
 ### Primeiro uso (setup completo)
@@ -152,7 +158,9 @@ A aplicação estará disponível em `http://localhost:5001`.
                       ├── /addresses/create     →  Criar endereço (auto-fill via CEP)
                       ├── /addresses/{id}       →  Detalhes do endereço
                       ├── /addresses/edit/{id}  →  Editar endereço
-                      ├── /addresses/delete/{id}→  Excluir (confirmado por modal)
-                      ├── /addresses/export     →  CSV de todos os endereços
-                      └── /addresses/export/{id}→  CSV de um endereço
+                      ├── /addresses/delete/{id}         →  Excluir (confirmado por modal)
+                      ├── /addresses/delete/selection    →  Excluir em lote (POST)
+                      ├── /addresses/export              →  CSV de todos os endereços
+                      ├── /addresses/export/selection    →  CSV de endereços selecionados
+                      └── /addresses/export/{id}         →  CSV de um endereço
 ```
