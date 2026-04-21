@@ -40,7 +40,17 @@
                             </svg>
                         </div>
                     </div>
-                    <span asp-validation-for="CEP" class="field-validation-error"></span>
+                    <div class="flex items-center justify-between mt-1.5">
+                        <span asp-validation-for="CEP" class="field-validation-error"></span>
+                        <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1 text-2xs font-medium text-brand hover:text-brand-dark transition-colors duration-150 no-underline ml-auto">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                                <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Não sei meu CEP
+                        </a>
+                    </div>
                 </div>
 
                 <div>
