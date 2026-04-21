@@ -9,55 +9,106 @@
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L7.5 6l-3 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         <span class="text-slate font-medium">Detalhes</span>
     </nav>
-    <h1 class="text-xl font-bold text-navy m-0">@Model.Name</h1>
 </div>
 
-<div class="bg-white border border-border rounded-xl shadow-card max-w-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-border bg-surface flex items-center gap-2">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-brand flex-shrink-0">
-            <path d="M12 2C8.134 2 5 5.134 5 9c0 6.5 7 15 7 15s7-8.5 7-15c0-3.866-3.134-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="currentColor"/>
-        </svg>
-        <p class="text-sm font-semibold text-slate m-0">Informações do endereço</p>
-    </div>
-    <dl class="divide-y divide-border">
-        <div class="grid grid-cols-[120px_1fr] px-6 py-3.5 items-baseline">
-            <dt class="text-2xs font-semibold tracking-widest uppercase text-subtle">Logradouro</dt>
-            <dd class="text-sm text-navy m-0">@Model.PublicPlace, @Model.Number</dd>
-        </div>
-        @if (!string.IsNullOrEmpty(Model.Complement))
-        {
-            <div class="grid grid-cols-[120px_1fr] px-6 py-3.5 items-baseline">
-                <dt class="text-2xs font-semibold tracking-widest uppercase text-subtle">Complemento</dt>
-                <dd class="text-sm text-navy m-0">@Model.Complement</dd>
+<div class="bg-white border border-border rounded-xl shadow-card overflow-hidden">
+
+    <div class="relative bg-gradient-to-br from-brand to-brand-dark px-8 py-8 overflow-hidden">
+        <div class="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/5"></div>
+        <div class="absolute -bottom-12 -left-6 w-56 h-56 rounded-full bg-white/5"></div>
+        <div class="relative flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" class="text-white">
+                        <path d="M12 2C8.134 2 5 5.134 5 9c0 6.5 7 15 7 15s7-8.5 7-15c0-3.866-3.134-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white/70 text-xs font-semibold tracking-widest uppercase mb-0.5">Endereço</p>
+                    <h1 class="text-2xl font-bold text-white m-0 leading-tight">@Model.Name</h1>
+                    <p class="text-white/80 text-sm mt-1 m-0">@Model.PublicPlace, @Model.Number — @Model.City/@Model.FederalUnit</p>
+                </div>
             </div>
-        }
-        <div class="grid grid-cols-[120px_1fr] px-6 py-3.5 items-baseline">
-            <dt class="text-2xs font-semibold tracking-widest uppercase text-subtle">Bairro</dt>
-            <dd class="text-sm text-navy m-0">@Model.District</dd>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-white/15 border border-white/20 text-white px-3 py-1.5 rounded-full backdrop-blur-sm">
+                CEP @Model.CEP
+            </span>
         </div>
-        <div class="grid grid-cols-[120px_1fr] px-6 py-3.5 items-baseline">
-            <dt class="text-2xs font-semibold tracking-widest uppercase text-subtle">Cidade / UF</dt>
-            <dd class="text-sm text-navy m-0">@Model.City / @Model.FederalUnit</dd>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-border border-b border-border">
+        <div class="px-6 py-4">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1">Logradouro</p>
+            <p class="text-sm font-medium text-navy m-0">@Model.PublicPlace</p>
         </div>
-        <div class="grid grid-cols-[120px_1fr] px-6 py-3.5 items-baseline">
-            <dt class="text-2xs font-semibold tracking-widest uppercase text-subtle">CEP</dt>
-            <dd class="text-sm text-navy m-0 font-mono">@Model.CEP</dd>
+        <div class="px-6 py-4">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1">Número</p>
+            <p class="text-sm font-medium text-navy m-0">@Model.Number</p>
         </div>
-    </dl>
-    <div class="px-6 py-4 border-t border-border bg-surface flex gap-2">
-        <a asp-action="Edit" asp-route-id="@Model.Id"
-           class="inline-flex items-center text-sm font-semibold text-white bg-brand hover:bg-brand-dark px-4 py-1.5 rounded-md transition-colors duration-150 no-underline cursor-pointer">Editar</a>
-        <a asp-action="ExportById" asp-route-id="@Model.Id"
-           class="inline-flex items-center gap-1.5 text-sm font-medium text-success bg-green-50 border border-green-200 hover:bg-green-100 px-4 py-1.5 rounded-md transition-colors duration-150 no-underline cursor-pointer">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            CSV
-        </a>
-        <button type="button" onclick="confirmDelete(@Model.Id, '@Html.Raw(Model.Name.Replace("'", "\\'"))')"
-                class="inline-flex items-center text-sm font-medium text-danger bg-red-50 border border-red-200 hover:bg-red-100 px-4 py-1.5 rounded-md transition-colors duration-150 cursor-pointer">Excluir</button>
+        <div class="px-6 py-4">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1">Cidade</p>
+            <p class="text-sm font-medium text-navy m-0">@Model.City</p>
+        </div>
+        <div class="px-6 py-4">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1">UF</p>
+            <p class="text-sm font-medium text-navy m-0">@Model.FederalUnit</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-border border-b border-border">
+        <div class="px-6 py-5">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1.5">Bairro</p>
+            <p class="text-sm text-slate m-0">@Model.District</p>
+        </div>
+        <div class="px-6 py-5">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1.5">Complemento</p>
+            <p class="text-sm text-slate m-0">
+                @if (!string.IsNullOrEmpty(Model.Complement))
+                {
+                    @Model.Complement
+                }
+                else
+                {
+                    <span class="text-subtle italic">Não informado</span>
+                }
+            </p>
+        </div>
+        <div class="px-6 py-5">
+            <p class="text-2xs font-semibold tracking-widest uppercase text-subtle mb-1.5">CEP</p>
+            <p class="text-sm text-slate m-0 font-mono tracking-wider">@Model.CEP</p>
+        </div>
+    </div>
+
+    <div class="px-6 py-4 bg-surface flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-brand hover:bg-brand-dark px-4 py-2 rounded-md transition-colors duration-150 no-underline cursor-pointer">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <path d="M11.5 2.5a1.414 1.414 0 012 2L5 13H2v-3L11.5 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Editar
+            </a>
+            <a asp-action="ExportById" asp-route-id="@Model.Id"
+               class="inline-flex items-center gap-1.5 text-sm font-medium text-success bg-green-50 border border-green-200 hover:bg-green-100 px-4 py-2 rounded-md transition-colors duration-150 no-underline cursor-pointer">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Exportar CSV
+            </a>
+            <button type="button" onclick="confirmDelete(@Model.Id, '@Html.Raw(Model.Name.Replace("'", "\\'"))')"
+                    class="inline-flex items-center gap-1.5 text-sm font-medium text-danger bg-red-50 border border-red-200 hover:bg-red-100 px-4 py-2 rounded-md transition-colors duration-150 cursor-pointer">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9a1 1 0 001 1h6a1 1 0 001-1l1-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Excluir
+            </button>
+        </div>
         <a asp-action="Index"
-           class="inline-flex items-center text-sm font-medium text-muted bg-white border border-border hover:border-border-dark hover:text-slate px-4 py-1.5 rounded-md transition-colors duration-150 no-underline cursor-pointer">Voltar</a>
+           class="inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-slate no-underline cursor-pointer transition-colors duration-150">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Voltar
+        </a>
     </div>
 </div>
 

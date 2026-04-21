@@ -98,16 +98,11 @@ else
                         </label>
                     </div>
                     <p class="text-sm text-slate mb-0.5 leading-relaxed">@address.PublicPlace, @address.Number</p>
-                    @if (!string.IsNullOrEmpty(address.Complement))
-                    {
-                        <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.Complement</p>
-                    }
-                    <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.District — @address.City / @address.FederalUnit</p>
-                    <span class="addr-card-cep inline-block text-2xs font-semibold tracking-widest uppercase text-subtle mt-2">CEP @address.CEP</span>
+                    <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.City / @address.FederalUnit</p>
                 </div>
                 <div class="addr-card-footer">
                     <a asp-action="GetById" asp-route-id="@address.Id"
-                       class="inline-flex items-center text-xs font-medium text-muted bg-surface border border-border hover:border-border-dark hover:text-slate px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Ver</a>
+                       class="inline-flex items-center text-xs font-medium text-muted bg-surface border border-border hover:border-border-dark hover:text-slate px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Detalhes</a>
                     <a asp-action="Edit" asp-route-id="@address.Id"
                        class="inline-flex items-center text-xs font-medium text-brand bg-brand-light border border-blue-200 hover:bg-blue-100 px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Editar</a>
                     <a asp-action="ExportById" asp-route-id="@address.Id"
