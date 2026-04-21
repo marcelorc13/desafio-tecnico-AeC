@@ -12,4 +12,13 @@ public class AddressResponseDto
     public string FederalUnit { get; set; } = string.Empty;
     public string Number { get; set; } = string.Empty;
     public int UserId { get; set; }
+
+    public string ToFormattedString()
+    {
+        var complement = string.IsNullOrEmpty(Complement)
+            ? string.Empty
+            : $", {Complement}";
+
+        return $"{Name}: {PublicPlace}, {Number}{complement} - {District}, {City}/{FederalUnit} - CEP: {CEP}";
+    }
 }

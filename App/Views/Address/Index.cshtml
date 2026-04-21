@@ -87,7 +87,8 @@ else
     <div id="addresses-container" class="mode-grid">
         @foreach (var address in Model)
         {
-            <div class="addr-card bg-white border border-border rounded-lg shadow-card hover:shadow-panel hover:border-border-dark transition-all duration-150 overflow-hidden" data-id="@address.Id">
+            <div class="addr-card bg-white border border-border rounded-lg shadow-card hover:shadow-panel hover:border-border-dark transition-all duration-150 overflow-hidden cursor-pointer" data-id="@address.Id"
+                 onclick="handleCardClick(event, this, '@Url.Action("GetById", new { id = address.Id })')">
                 <div class="addr-card-accent"></div>
                 <div class="addr-card-body">
                     <div class="flex items-start justify-between gap-2 mb-1.5">
@@ -101,17 +102,40 @@ else
                     <p class="text-sm text-muted mb-0.5 leading-relaxed">@address.City / @address.FederalUnit</p>
                 </div>
                 <div class="addr-card-footer">
-                    <a asp-action="GetById" asp-route-id="@address.Id"
-                       class="inline-flex items-center text-xs font-medium text-muted bg-surface border border-border hover:border-border-dark hover:text-slate px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Detalhes</a>
-                    <a asp-action="Edit" asp-route-id="@address.Id"
-                       class="inline-flex items-center text-xs font-medium text-brand bg-brand-light border border-blue-200 hover:bg-blue-100 px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">Editar</a>
-                    <a asp-action="ExportById" asp-route-id="@address.Id"
-                       class="inline-flex items-center gap-1 text-xs font-medium text-success bg-green-50 border border-green-200 hover:bg-green-100 px-2.5 py-1 rounded transition-colors duration-150 no-underline cursor-pointer">
-                        CSV
-                    </a>
-                    <button type="button"
-                            onclick="confirmDelete(@address.Id, '@Html.Raw(address.Name.Replace("'", "\\'"))')"
-                            class="inline-flex items-center text-xs font-medium text-danger bg-red-50 border border-red-200 hover:bg-red-100 px-2.5 py-1 rounded transition-colors duration-150 cursor-pointer">Excluir</button>
+                    <div class="flex items-center gap-1.5 flex-1">
+                        <a asp-action="Edit" asp-route-id="@address.Id"
+                           class="inline-flex items-center text-xs font-medium text-brand bg-brand-light border border-blue-200 hover:bg-blue-100 px-2.5 py-1.5 rounded transition-colors duration-150 no-underline cursor-pointer">Editar</a>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button type="button"
+                                data-address="@address.ToFormattedString()"
+                                onclick="copyAddress(this)"
+                                title="Copiar endereço"
+                                class="copy-btn inline-flex items-center justify-center w-7 h-7 text-muted bg-white border border-border hover:border-border-dark hover:text-slate rounded transition-colors duration-150 cursor-pointer">
+                            <svg class="copy-icon" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <rect x="5" y="5" width="8" height="9" rx="1.2" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M3 11V3a1 1 0 011-1h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                            <svg class="check-icon hidden" width="12" height="12" viewBox="0 0 16 16" fill="none" style="color: var(--color-success)">
+                                <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <a asp-action="ExportById" asp-route-id="@address.Id"
+                           title="Exportar CSV"
+                           class="inline-flex items-center justify-center w-7 h-7 text-success bg-green-50 border border-green-200 hover:bg-green-100 rounded transition-colors duration-150 no-underline cursor-pointer">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <button type="button"
+                                onclick="confirmDelete(@address.Id, '@Html.Raw(address.Name.Replace("'", "\\'"))')"
+                                title="Excluir endereço"
+                                class="inline-flex items-center justify-center w-7 h-7 text-danger bg-red-50 border border-red-200 hover:bg-red-100 rounded transition-colors duration-150 cursor-pointer">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5M3 4l1 9a1 1 0 001 1h6a1 1 0 001-1l1-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         }
@@ -146,7 +170,6 @@ else
 <script>
     const STORAGE_KEY = 'addr-view';
 
-    // --- view toggle ---
     function setView(v) {
         const c = document.getElementById('addresses-container');
         if (!c) return;
@@ -158,7 +181,31 @@ else
 
     (function () { setView(localStorage.getItem(STORAGE_KEY) || 'grid'); })();
 
-    // --- delete modal ---
+	function copyAddress(btn) {
+		const address = btn.getAttribute("data-address");
+
+		const copyIcon = btn.querySelector('.copy-icon');
+		const checkIcon = btn.querySelector('.check-icon');
+
+		const showSuccess = () => {
+			copyIcon.classList.add('hidden');
+			checkIcon.classList.remove('hidden');
+			setTimeout(() => {
+				copyIcon.classList.remove('hidden');
+				checkIcon.classList.add('hidden');
+			}, 2000);
+		};
+
+		navigator.clipboard.writeText(address)
+			.then(showSuccess)
+			.catch(() => fallbackCopy(address, showSuccess));
+	}
+
+    function handleCardClick(event, card, url) {
+        if (event.target.closest('a, button, input, label')) return;
+        window.location.href = url;
+    }
+
     function confirmDelete(id, name) {
         document.getElementById('modal-name').textContent = name;
         document.getElementById('delete-form').action = `/addresses/delete/${id}`;
